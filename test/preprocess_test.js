@@ -561,7 +561,7 @@ exports['preprocess'] = {
     test.done();
   },
   '@include files': function(test) {
-    test.expect(17);
+    test.expect(18);
 
     var input,expected;
     input = "a<!-- @include include.html -->c";
@@ -574,7 +574,13 @@ exports['preprocess'] = {
 
     input = "a\n /* @include include.block.js */c";
     expected = "a\n !foobar!Hello js!\n !bazqux!c";
+    pp.resetIncluded();
     test.equal(pp.preprocess(input, { srcDir : 'test', hello: hello.bind(null, test, 1)},'js'), expected, 'Should include files (js, block)');
+
+    input = "a\n /* @once include_once.js */c";
+    input = input+input;
+    expected = "a\n !foobar!\n !bazqux!ca\nc";
+    test.equal(pp.preprocess(input, { srcDir : 'test'},'js'), expected, 'Should include files once (js, block)');
 
     input = "a\n /* @include includenewline.txt */c";
     expected = "a\n !foobar!\n c";
